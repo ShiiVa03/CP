@@ -1102,7 +1102,7 @@ hyloAlgForm = undefined
 
 Solução para listas não vazias:
 \begin{code}
-avg = p1.aavg_aux
+avg = p1.avg_aux
 \end{code}
 
 Para este problema é necessário definir o "conjunto de leis" dos catamorfismos para listas não vazia.Assim,definimos o \emph{inNVl}, o \emph{outNVL}, o \emph{recNVL} e claro, por fim, o \emph{cataNVL} 
@@ -1119,15 +1119,15 @@ recNVL f = id -|- id >< f
 cataNVL g = g . recNVL (cataNVL g) . outNVL
 
 
---avg_aux = undefined
-aavg_aux = cataNVL (either (split id (const 1)) (split gaux22 (succ.p2.p2)))where
+avg_aux = cataNVL (either (split id (const 1)) (split gaux22 (succ.p2.p2)))where
        gaux22(x,(avg,len)) = (x + len*avg) / (1 + len)
 
 \end{code}
 Solução para árvores de tipo \LTree:
 \begin{code}
 avgLTree = p1.cataLTree gene where
-   gene = undefined
+   gene = either (split id (const 1)) (split avgLTreeaux ((uncurry (+)).(p2 >< p2))) where
+        avgLTreeaux((avgLeft,lenLeft),(avgRight,lenRight)) = ((avgLeft*lenLeft) + (avgRight*lenRight)) / (lenLeft +lenRight)
 \end{code}
 
 \subsection*{Problema 5}
