@@ -1021,9 +1021,9 @@ Definir:
 
 outExpAr :: ExpAr a -> OutExpAr a 
 outExpAr X = i1 ()
-outExpAr (N a) = i2(i1 a)
-outExpAr (Bin op a b) = i2(i2(i1(op,(a,b))))
-outExpAr (Un op a) = i2(i2(i2(op,a)))
+outExpAr (N a) = i2 . i1 $ a
+outExpAr (Bin op a b) = i2 . i2 . i1 $ (op, (a, b))
+outExpAr (Un op a) = i2 . i2 . i2 $ (op, a)
 ---
 recExpAr g = baseExpAr id id id g g id g
 ---
