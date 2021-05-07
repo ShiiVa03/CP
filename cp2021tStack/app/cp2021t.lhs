@@ -1028,12 +1028,12 @@ outExpAr (Un op a) = i2 . i2 . i2 $ (op, a)
 recExpAr g = baseExpAr id id id g g id g
 ---
 
-g_eval_exp a = either (const a) g2 where
-      g2 = either id (either binOp unOp)
-      binOp (Sum,(x,y)) = x + y
-      binOp (Product,(x,y)) = x * y
-      unOp (Negate,x) = negate x
-      unOp (E,x) = expd x
+g_eval_exp a = either (const a) (either id (either (uncurry binOp) (uncurry unOp))) where
+    binOp Sum = uncurry (+)
+    binOp Product = uncurry (*)
+    unOp Negate = negate
+    unOp E = expd
+---
 
 ---
 clean = undefined
