@@ -1007,7 +1007,7 @@ eval_exp :: Floating a => a -> (ExpAr a) -> a
 eval_exp a = cataExpAr (g_eval_exp a)
 
 optmize_eval :: (Floating a, Eq a) => a -> (ExpAr a) -> a
-optmize_eval a = hyloExpAr (gopt a) clean
+optmize_eval a = hyloExpAr (g_eval_exp a) clean
 
 sd :: Floating a => ExpAr a -> ExpAr a
 sd = p2 . cataExpAr sd_gen
@@ -1015,8 +1015,12 @@ sd = p2 . cataExpAr sd_gen
 ad :: Floating a => a -> ExpAr a -> a
 ad v = p2 . cataExpAr (ad_gen v)
 \end{code}
-Definir:
+Definir:\par
 
+Para definirmos a função outExpAr temos de ter em atenção o tipo de saída, ou seja, OutExpAr.
+É então fácil definir esta função tal como todos os outros tipos já previamente definidos.
+Para o construtor X inserimos o único elemento do tipo 1 na parte esquerda do coproduto. E seguimos 
+o mesmo raciocínio para os outros construtores.\par
 \begin{code}
 
 outExpAr :: ExpAr a -> OutExpAr a 
@@ -1024,31 +1028,120 @@ outExpAr X = i1 ()
 outExpAr (N a) = i2 . i1 $ a
 outExpAr (Bin op a b) = i2 . i2 . i1 $ (op, (a, b))
 outExpAr (Un op a) = i2 . i2 . i2 $ (op, a)
----
+\end{code}
+
+A função recExpAr é o functor do tipo ExpAr, ou seja, queremos preservar os respetivos construtores e aplicar 
+a função g à expressão.\par
+
+\begin{code}
+
 recExpAr g = baseExpAr id id id g g id g
----
+
+\end{code}
+
+A função eval\_exp é um catamorfismo, logo temos de definir o gene desta. Assim, a função g\_eval\_exp é 
+o gene deste catamorfismo. Através de um diagrama é fácil de ver o catamorfismo.
+
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |ExpAr A|
+           \ar[d]_-{|cataNat g_eval_exp|}
+&
+    |OutExpAr A|
+           \ar[d]^{|recExpAr eval_exp|}
+           \ar[l]_-{|inNat|}
+\\
+     |A|
+&
+     |1 + (A + ((BinOp,(A,A)) + (UnOp,A)) | 
+           \ar[l]^-{|g_eval_exp|}
+}
+\end{eqnarray*}
+
+Através do diagrama conseguimos perceber que para avaliar uma expressão temos vários pontos :
+\begin{itemize}
+\item Se tivermos X, temos que dar o valor que recebemos.
+\item Se tivermos uma constante (N \emph{natural}) devolvemos esse natural
+\item Se tivermos uma operação binária temos de aplicar essa operação de forma \emph{uncurried} porque recebemos um par
+\item Se tivermos uma operação unária basta aplicar a função
+\end{itemize}
+
+\begin{code}
 
 g_eval_exp a = either (const a) (either id (either (uncurry binOp) (uncurry unOp))) where
     binOp Sum = uncurry (+)
     binOp Product = uncurry (*)
     unOp Negate = negate
     unOp E = expd
----
 
----
-clean = undefined
----
-gopt = undefined
 \end{code}
+
+Para a otimização desta avaliação de expressões podemos implementar esta avaliação como um hilomorfismo. A vantagem
+desta forma de avaliação em vez de um "gene" inteligente é o facto de se a expressão crescer de forma descontrolada 
+e, por vezes, sem necessidade porque é um produto por zero.
+
+Assim, o passo de \emph{divide} deste hilomorfismo, é a funçao \emph{clean}, que tira partido dos elemntos absorventes
+das operações. Ou seja, o resultado do produto por zero de uma expressão pode ser logo zero.
+
+
+\begin{code}
+
+clean X = i1()
+clean (N a) = i2(i1 a)
+clean (Bin Sum (N 0) a) = clean a 
+clean (Bin Sum a (N 0)) = clean a
+clean (Bin Product (N 0) _) = i2(i1 0)
+clean (Bin Product _ (N 0)) = i2(i1 0)
+clean (Bin op a b) = i2 . i2 . i1 $ (op, (a, b))
+clean (Un op a) = i2.i2.i2 $ (op,a)
+{-
+gopt = either (const a) (either id (either (uncurry binOp) (uncurry unOp))) where
+    binOp Sum = uncurry (+)
+    binOp Product = uncurry (*)
+    unOp Negate = negate
+    unOp E = expd
+
+-}
+ 
+\end{code}
+
+Para a derivada de uma expressão seguindo \emph{symbolic differentiation}, alterando a expressão de forma recursiva.
+Para o gene deste catamorfismo temos de obrigatoriamente dar um par de expressões porque na primeira componente do par
+temos de preservar a expressão original para a regra do produto. Deste modo temos que o gene deste catamorfismo é composto 
+pelas várias regras da derivação : 
+\begin{itemize}
+\item Se recebemos um X então a sua derivada é 1. O par é então (X,N 1)
+\item Se recebemos um número natural devolvemos o par (N x, N 0)
+\item Se recebemos a soma de duas expressões já derivadas é apenas darmos a soma dessas derivadas
+\item Se recebemos o produto então temos de aplicar a regra do produto usando a pré-condição de termos a expressão original reservada
+\item No caso quer da exponenciação quer da negção é apenas aplicar a regra da exponenciação e negar a derivada da expressão resultante respetivamente
+\end{itemize}
+
 
 \begin{code}
 sd_gen :: Floating a =>
     Either () (Either a (Either (BinOp, ((ExpAr a, ExpAr a), (ExpAr a, ExpAr a))) (UnOp, (ExpAr a, ExpAr a)))) -> (ExpAr a, ExpAr a)
-sd_gen = undefined
+sd_gen = (either sd1 (either sd2 (either sd3 sd4))) where
+      sd1 x = (X, (N 1))
+      sd2 y = ((N y),(N 0))
+      sd3 (Sum,((a,b),(c,d))) = (Bin Sum a c, Bin Sum b d)
+      sd3 (Product,((a,b),(c,d))) = (Bin Product a c, Bin Sum (Bin Product a d) (Bin Product b c))
+      sd4 (E,(a,b)) = (Un E a, Bin Product(Un E a) b)
+      sd4 (Negate,(a,b)) = (Un Negate a, Un Negate b)
 \end{code}
 
+Como referido a técnica de derivação seguindo \emph{symbolic differentiation} não éa mais efeciente, havendo por isso a possibilidade de
+derivar a expressão no ponto. Assim, o gene deste catamorfismo torna-se fácil de definir. Usando o mesmo diagram definido mais acima neste 
+documento basta substituir o tipo de retorno por Naturais e, assim, passamos não a lidar com expressões mas sim com números, sendo a derivação mais fácil.\par
 \begin{code}
-ad_gen = undefined
+ad_gen v = (either g1 (either g2 (either g3 g4))) where
+      g1 x = (v, 1)
+      g2 y = (y,0)
+      g3 (Sum,((a,b),(c,d))) = (a+c, b + d)
+      g3 (Product,((a,b),(c,d))) = (a*c, (a*d)+(b*c))
+      g4 (E,(a,b)) = ((expd a), (expd a) * b)
+      g4 (Negate,(a,b)) = ((negate a), negate b)
 \end{code}
 
 \subsection*{Problema 2}
@@ -1083,12 +1176,44 @@ seja a função pretendida.
 \textbf{NB}: usar divisão inteira.
 Apresentar de seguida a justificação da solução encontrada.
 
+Partindo da expressão dada podemo-la expressar como uma recursão.
+
+\begin{spec}
+c 0 = 1
+c(n+1) = div ((c n) * (2n +2) * (2n +1)) ((n+2)*(n+1))
+\end{spec}
+
+De notar que decidimos agrupar a chamada de C\_n com ((2n +2) * (2n +1)) e só depois realizar a divisão graças a ser a divisão inteira,
+e , por isso, não realizarmos arredondamentos.\par
+
+Seguidamente, seguindo a regra de algibeira dada, temos então de transformar estas dependências de n por funções que sejam também elas
+recursivas.
+
+Definimos assim as seguintes funções : 
+\begin{spec}
+f n = (2n +2) * (2n +1)
+
+faux n = 8n + 10
+
+h n = (n+2)*(n+1)
+
+haux n = 2n +4
+
+\end{spec}
+
+Após isto é apenas aplicar de forma direta a regra dada.\par
+
 \subsection*{Problema 3}
 
 \begin{code}
+
+
 calcLine :: NPoint -> (NPoint -> OverTime NPoint)
 calcLine = cataList h where
-   h = undefined
+    h = either h1 h2
+    h1 x = const nil
+    h2(d,f) [] = nil
+    h2(d,f) (x:xs) = \z -> concat $ (sequenceA [singl . linear1d d x, f xs]) z
 
 deCasteljau :: [NPoint] -> OverTime NPoint
 deCasteljau = hyloAlgForm alg coalg where

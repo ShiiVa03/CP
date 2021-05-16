@@ -94,12 +94,32 @@
 \indexentry{Racionais|hyperpage}{12}
 \indexentry{Função!$\pi _2$|hyperpage}{13}
 \indexentry{Função!$\pi _2$|hyperpage}{13}
+\indexentry{Combinador ``pointfree''!\emph  {cata}|hyperpage}{13}
+\indexentry{Função!\emph  {uncurry}|hyperpage}{13}
+\indexentry{Função!\emph  {uncurry}|hyperpage}{13}
 \indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{13}
 \indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{13}
 \indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{13}
-\indexentry{Função!\emph  {for}|hyperpage}{14}
-\indexentry{Função!$\pi _1$|hyperpage}{14}
+\indexentry{Função!\emph  {uncurry}|hyperpage}{13}
+\indexentry{Função!\emph  {uncurry}|hyperpage}{13}
 \indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{14}
-\indexentry{Cálculo de Programas!Material Pedagógico!LTree.hs|hyperpage}{14}
-\indexentry{Função!$\pi _1$|hyperpage}{14}
-\indexentry{F\#|hyperpage}{14}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{14}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{14}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{14}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{14}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{14}
+\indexentry{Função!\emph  {for}|hyperpage}{15}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{15}
+\indexentry{Função!$\pi _1$|hyperpage}{15}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{15}
+\indexentry{Função!\emph  {succ}|hyperpage}{16}
+\indexentry{Função!$\pi _2$|hyperpage}{16}
+\indexentry{Função!$\pi _2$|hyperpage}{16}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{16}
+\indexentry{Cálculo de Programas!Material Pedagógico!LTree.hs|hyperpage}{16}
+\indexentry{Função!$\pi _1$|hyperpage}{16}
+\indexentry{Função!\emph  {uncurry}|hyperpage}{16}
+\indexentry{Função!$\pi _2$|hyperpage}{16}
+\indexentry{Função!$\pi _2$|hyperpage}{16}
+\indexentry{Combinador ``pointfree''!\emph  {either}|hyperpage}{16}
+\indexentry{F\#|hyperpage}{16}

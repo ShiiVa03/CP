@@ -1042,7 +1042,7 @@ a menos de um erro de 0.1 milésimas:
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{prop\char95 avg}\mathbin{::}\Conid{Ord}\;\Varid{a}\Rightarrow [\mskip1.5mu \Varid{a}\mskip1.5mu]\to \Conid{Property}{}\<[E]%
+\>[B]{}\Varid{prop\char95 avg}\mathbin{::}[\mskip1.5mu \Conid{Double}\mskip1.5mu]\to \Conid{Property}{}\<[E]%
 \\
 \>[B]{}\Varid{prop\char95 avg}\mathrel{=}\Varid{nonempty}\Rightarrow\Varid{diff}\leq\underline{\mathrm{0.000001}}\;\mathbf{where}{}\<[E]%
 \\
@@ -1542,7 +1542,7 @@ São dadas:
 \\[\blanklineskip]%
 \>[B]{}\Varid{optmize\char95 eval}\mathbin{::}(\Conid{Floating}\;\Varid{a},\Conid{Eq}\;\Varid{a})\Rightarrow \Varid{a}\to (\Conid{ExpAr}\;\Varid{a})\to \Varid{a}{}\<[E]%
 \\
-\>[B]{}\Varid{optmize\char95 eval}\;\Varid{a}\mathrel{=}\Varid{hyloExpAr}\;(\Varid{gopt}\;\Varid{a})\;\Varid{clean}{}\<[E]%
+\>[B]{}\Varid{optmize\char95 eval}\;\Varid{a}\mathrel{=}\Varid{hyloExpAr}\;(\Varid{g\char95 eval\char95 exp}\;\Varid{a})\;\Varid{clean}{}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{sd}\mathbin{::}\Conid{Floating}\;\Varid{a}\Rightarrow \Conid{ExpAr}\;\Varid{a}\to \Conid{ExpAr}\;\Varid{a}{}\<[E]%
 \\
@@ -1553,72 +1553,193 @@ São dadas:
 \>[B]{}\Varid{ad}\;\Varid{v}\mathrel{=}\p2\comp \Varid{cataExpAr}\;(\Varid{ad\char95 gen}\;\Varid{v}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
-Definir:
+Definir:\par
 
+Para definirmos a função outExpAr temos de ter em atenção o tipo de saída, ou seja, OutExpAr.
+É então fácil definir esta função tal como todos os outros tipos já previamente definidos.
+Para o construtor X inserimos o único elemento do tipo 1 na parte esquerda do coproduto. E seguimos 
+o mesmo raciocínio para os outros construtores.\par
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{outExpAr}\mathbin{::}\Conid{ExpAr}\;\Varid{a}\to \Conid{OutExpAr}\;\Varid{a}{}\<[E]%
 \\
 \>[B]{}\Varid{outExpAr}\;\Conid{X}\mathrel{=}i_1\;(){}\<[E]%
 \\
-\>[B]{}\Varid{outExpAr}\;(\Conid{N}\;\Varid{a})\mathrel{=}i_2\;(i_1\;\Varid{a}){}\<[E]%
+\>[B]{}\Varid{outExpAr}\;(\Conid{N}\;\Varid{a})\mathrel{=}i_2\comp i_1\mathbin{\$}\Varid{a}{}\<[E]%
 \\
-\>[B]{}\Varid{outExpAr}\;(\Conid{Bin}\;\Varid{op}\;\Varid{a}\;\Varid{b})\mathrel{=}i_2\;(i_2\;(i_1\;(\Varid{op},(\Varid{a},\Varid{b})))){}\<[E]%
+\>[B]{}\Varid{outExpAr}\;(\Conid{Bin}\;\Varid{op}\;\Varid{a}\;\Varid{b})\mathrel{=}i_2\comp i_2\comp i_1\mathbin{\$}(\Varid{op},(\Varid{a},\Varid{b})){}\<[E]%
 \\
-\>[B]{}\Varid{outExpAr}\;(\Conid{Un}\;\Varid{op}\;\Varid{a})\mathrel{=}i_2\;(i_2\;(i_2\;(\Varid{op},\Varid{a}))){}\<[E]%
-\\
-\>[B]{}\mbox{\onelinecomment }{}\<[E]%
-\\
-\>[B]{}\Varid{recExpAr}\;\Varid{g}\mathrel{=}\Varid{baseExpAr}\;\Varid{id}\;\Varid{id}\;\Varid{id}\;\Varid{g}\;\Varid{g}\;\Varid{id}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\mbox{\onelinecomment }{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{g\char95 eval\char95 exp}\;\Varid{a}\mathrel{=}\alt{\underline{\Varid{a}}}{\Varid{g2}}\;\mathbf{where}{}\<[E]%
-\\
-\>[B]{}\hsindent{7}{}\<[7]%
-\>[7]{}\Varid{g2}\mathrel{=}\alt{\Varid{id}}{\alt{\Varid{binOp}}{\Varid{unOp}}}{}\<[E]%
-\\
-\>[B]{}\hsindent{7}{}\<[7]%
-\>[7]{}\Varid{binOp}\;(\Conid{Sum},(\Varid{x},\Varid{y}))\mathrel{=}\Varid{x}\mathbin{+}\Varid{y}{}\<[E]%
-\\
-\>[B]{}\hsindent{7}{}\<[7]%
-\>[7]{}\Varid{binOp}\;(\Conid{Product},(\Varid{x},\Varid{y}))\mathrel{=}\Varid{x}\mathbin{*}\Varid{y}{}\<[E]%
-\\
-\>[B]{}\hsindent{7}{}\<[7]%
-\>[7]{}\Varid{unOp}\;(\Conid{Negate},\Varid{x})\mathrel{=}\Varid{negate}\;\Varid{x}{}\<[E]%
-\\
-\>[B]{}\hsindent{7}{}\<[7]%
-\>[7]{}\Varid{unOp}\;(\Conid{E},\Varid{x})\mathrel{=}\Varid{expd}\;\Varid{x}{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\mbox{\onelinecomment }{}\<[E]%
-\\
-\>[B]{}\Varid{clean}\mathrel{=}\bot {}\<[E]%
-\\
-\>[B]{}\mbox{\onelinecomment }{}\<[E]%
-\\
-\>[B]{}\Varid{gopt}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{outExpAr}\;(\Conid{Un}\;\Varid{op}\;\Varid{a})\mathrel{=}i_2\comp i_2\comp i_2\mathbin{\$}(\Varid{op},\Varid{a}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
+
+A função recExpAr é o functor do tipo ExpAr, ou seja, queremos preservar os respetivos construtores e aplicar 
+a função g à expressão.\par
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{recExpAr}\;\Varid{g}\mathrel{=}\Varid{baseExpAr}\;\Varid{id}\;\Varid{id}\;\Varid{id}\;\Varid{g}\;\Varid{g}\;\Varid{id}\;\Varid{g}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+A função eval\_exp é um catamorfismo, logo temos de definir o gene desta. Assim, a função g\_eval\_exp é 
+o gene deste catamorfismo. Através de um diagrama é fácil de ver o catamorfismo.
+
+
+\begin{eqnarray*}
+\xymatrix@C=2cm{
+    \ensuremath{\Conid{ExpAr}\;\Conid{A}}
+           \ar[d]_-{\ensuremath{\cata{\Varid{g\char95 eval\char95 exp}}}}
+&
+    \ensuremath{\Conid{OutExpAr}\;\Conid{A}}
+           \ar[d]^{\ensuremath{\Varid{recExpAr}\;\Varid{eval\char95 exp}}}
+           \ar[l]_-{\ensuremath{\mathsf{in}}}
+\\
+     \ensuremath{\Conid{A}}
+&
+     \ensuremath{\mathrm{1}\mathbin{+}(\Conid{A}\mathbin{+}((\Conid{BinOp},(\Conid{A},\Conid{A}))\mathbin{+}(\Conid{UnOp},\Conid{A}))} 
+           \ar[l]^-{\ensuremath{\Varid{g\char95 eval\char95 exp}}}
+}
+\end{eqnarray*}
+
+Através do diagrama conseguimos perceber que para avaliar uma expressão temos vários pontos :
+\begin{itemize}
+\item Se tivermos X, temos que dar o valor que recebemos.
+\item Se tivermos uma constante (N \emph{natural}) devolvemos esse natural
+\item Se tivermos uma operação binária temos de aplicar essa operação de forma \emph{uncurried} porque recebemos um par
+\item Se tivermos uma operação unária basta aplicar a função
+\end{itemize}
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{g\char95 eval\char95 exp}\;\Varid{a}\mathrel{=}\alt{\underline{\Varid{a}}}{\alt{\Varid{id}}{\alt{\uncurry{\Varid{binOp}}}{\uncurry{\Varid{unOp}}}}}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{binOp}\;\Conid{Sum}\mathrel{=}\uncurry{(\mathbin{+})}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{binOp}\;\Conid{Product}\mathrel{=}\uncurry{(\mathbin{*})}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{unOp}\;\Conid{Negate}\mathrel{=}\Varid{negate}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{unOp}\;\Conid{E}\mathrel{=}\Varid{expd}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Para a otimização desta avaliação de expressões podemos implementar esta avaliação como um hilomorfismo. A vantagem
+desta forma de avaliação em vez de um "gene" inteligente é o facto de se a expressão crescer de forma descontrolada 
+e, por vezes, sem necessidade porque é um produto por zero.
+
+Assim, o passo de \emph{divide} deste hilomorfismo, é a funçao \emph{clean}, que tira partido dos elemntos absorventes
+das operações. Ou seja, o resultado do produto por zero de uma expressão pode ser logo zero.
+
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{clean}\;\Conid{X}\mathrel{=}i_1\;(){}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{N}\;\Varid{a})\mathrel{=}i_2\;(i_1\;\Varid{a}){}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{Bin}\;\Conid{Sum}\;(\Conid{N}\;\mathrm{0})\;\Varid{a})\mathrel{=}\Varid{clean}\;\Varid{a}{}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{Bin}\;\Conid{Sum}\;\Varid{a}\;(\Conid{N}\;\mathrm{0}))\mathrel{=}\Varid{clean}\;\Varid{a}{}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{Bin}\;\Conid{Product}\;(\Conid{N}\;\mathrm{0})\;\anonymous )\mathrel{=}i_2\;(i_1\;\mathrm{0}){}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{Bin}\;\Conid{Product}\;\anonymous \;(\Conid{N}\;\mathrm{0}))\mathrel{=}i_2\;(i_1\;\mathrm{0}){}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{Bin}\;\Varid{op}\;\Varid{a}\;\Varid{b})\mathrel{=}i_2\comp i_2\comp i_1\mathbin{\$}(\Varid{op},(\Varid{a},\Varid{b})){}\<[E]%
+\\
+\>[B]{}\Varid{clean}\;(\Conid{Un}\;\Varid{op}\;\Varid{a})\mathrel{=}i_2\comp i_2\comp i_2\mathbin{\$}(\Varid{op},\Varid{a}){}\<[E]%
+\\
+\>[B]{}\mbox{\commentbegin 
+gopt = either (const a) (either id (either (uncurry binOp) (uncurry unOp))) where
+    binOp Sum = uncurry (+)
+    binOp Product = uncurry (*)
+    unOp Negate = negate
+    unOp E = expd
+ \commentend}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Para a derivada de uma expressão seguindo \emph{symbolic differentiation}, alterando a expressão de forma recursiva.
+Para o gene deste catamorfismo temos de obrigatoriamente dar um par de expressões porque na primeira componente do par
+temos de preservar a expressão original para a regra do produto. Deste modo temos que o gene deste catamorfismo é composto 
+pelas várias regras da derivação : 
+\begin{itemize}
+\item Se recebemos um X então a sua derivada é 1. O par é então (X,N 1)
+\item Se recebemos um número natural devolvemos o par (N x, N 0)
+\item Se recebemos a soma de duas expressões já derivadas é apenas darmos a soma dessas derivadas
+\item Se recebemos o produto então temos de aplicar a regra do produto usando a pré-condição de termos a expressão original reservada
+\item No caso quer da exponenciação quer da negção é apenas aplicar a regra da exponenciação e negar a derivada da expressão resultante respetivamente
+\end{itemize}
+
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{sd\char95 gen}\mathbin{::}\Conid{Floating}\;\Varid{a}\Rightarrow {}\<[E]%
 \\
 \>[B]{}\hsindent{5}{}\<[5]%
 \>[5]{}()+(\Varid{a}+((\Conid{BinOp},((\Conid{ExpAr}\;\Varid{a},\Conid{ExpAr}\;\Varid{a}),(\Conid{ExpAr}\;\Varid{a},\Conid{ExpAr}\;\Varid{a})))+(\Conid{UnOp},(\Conid{ExpAr}\;\Varid{a},\Conid{ExpAr}\;\Varid{a}))))\to (\Conid{ExpAr}\;\Varid{a},\Conid{ExpAr}\;\Varid{a}){}\<[E]%
 \\
-\>[B]{}\Varid{sd\char95 gen}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{sd\char95 gen}\mathrel{=}\alt{\Varid{sd1}}{\alt{\Varid{sd2}}{\alt{\Varid{sd3}}{\Varid{sd4}}}}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{sd1}\;\Varid{x}\mathrel{=}(\Conid{X},(\Conid{N}\;\mathrm{1})){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{sd2}\;\Varid{y}\mathrel{=}((\Conid{N}\;\Varid{y}),(\Conid{N}\;\mathrm{0})){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{sd3}\;(\Conid{Sum},((\Varid{a},\Varid{b}),(\Varid{c},\Varid{d})))\mathrel{=}(\Conid{Bin}\;\Conid{Sum}\;\Varid{a}\;\Varid{c},\Conid{Bin}\;\Conid{Sum}\;\Varid{b}\;\Varid{d}){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{sd3}\;(\Conid{Product},((\Varid{a},\Varid{b}),(\Varid{c},\Varid{d})))\mathrel{=}(\Conid{Bin}\;\Conid{Product}\;\Varid{a}\;\Varid{c},\Conid{Bin}\;\Conid{Sum}\;(\Conid{Bin}\;\Conid{Product}\;\Varid{a}\;\Varid{d})\;(\Conid{Bin}\;\Conid{Product}\;\Varid{b}\;\Varid{c})){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{sd4}\;(\Conid{E},(\Varid{a},\Varid{b}))\mathrel{=}(\Conid{Un}\;\Conid{E}\;\Varid{a},\Conid{Bin}\;\Conid{Product}\;(\Conid{Un}\;\Conid{E}\;\Varid{a})\;\Varid{b}){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{sd4}\;(\Conid{Negate},(\Varid{a},\Varid{b}))\mathrel{=}(\Conid{Un}\;\Conid{Negate}\;\Varid{a},\Conid{Un}\;\Conid{Negate}\;\Varid{b}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
+Como referido a técnica de derivação seguindo \emph{symbolic differentiation} não éa mais efeciente, havendo por isso a possibilidade de
+derivar a expressão no ponto. Assim, o gene deste catamorfismo torna-se fácil de definir. Usando o mesmo diagram definido mais acima neste 
+documento basta substituir o tipo de retorno por Naturais e, assim, passamos não a lidar com expressões mas sim com números, sendo a derivação mais fácil.\par
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{7}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{ad\char95 gen}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{ad\char95 gen}\;\Varid{v}\mathrel{=}\alt{\Varid{g1}}{\alt{\Varid{g2}}{\alt{\Varid{g3}}{\Varid{g4}}}}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{g1}\;\Varid{x}\mathrel{=}(\Varid{v},\mathrm{1}){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{g2}\;\Varid{y}\mathrel{=}(\Varid{y},\mathrm{0}){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{g3}\;(\Conid{Sum},((\Varid{a},\Varid{b}),(\Varid{c},\Varid{d})))\mathrel{=}(\Varid{a}\mathbin{+}\Varid{c},\Varid{b}\mathbin{+}\Varid{d}){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{g3}\;(\Conid{Product},((\Varid{a},\Varid{b}),(\Varid{c},\Varid{d})))\mathrel{=}(\Varid{a}\mathbin{*}\Varid{c},(\Varid{a}\mathbin{*}\Varid{d})\mathbin{+}(\Varid{b}\mathbin{*}\Varid{c})){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{g4}\;(\Conid{E},(\Varid{a},\Varid{b}))\mathrel{=}((\Varid{expd}\;\Varid{a}),(\Varid{expd}\;\Varid{a})\mathbin{*}\Varid{b}){}\<[E]%
+\\
+\>[B]{}\hsindent{7}{}\<[7]%
+\>[7]{}\Varid{g4}\;(\Conid{Negate},(\Varid{a},\Varid{b}))\mathrel{=}((\Varid{negate}\;\Varid{a}),\Varid{negate}\;\Varid{b}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -1665,18 +1786,61 @@ seja a função pretendida.
 \textbf{NB}: usar divisão inteira.
 Apresentar de seguida a justificação da solução encontrada.
 
+Partindo da expressão dada podemo-la expressar como uma recursão.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{c}\;\mathrm{0}\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[B]{}\Varid{c}\;(\Varid{n}\mathbin{+}\mathrm{1})\mathrel{=}(\Varid{c}\;\Varid{n})\mathbin{*}(\mathrm{2}\;\Varid{n}\mathbin{+}\mathrm{2})\mathbin{*}(\mathrm{2}\;\Varid{n}\mathbin{+}\mathrm{1})\div (\Varid{n}\mathbin{+}\mathrm{2})\mathbin{*}(\Varid{n}\mathbin{+}\mathrm{1}){}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+De notar que decidimos agrupar a chamada de C\_n com ((2n +2) * (2n +1)) e só depois realizar a divisão graças a ser a divisão inteira,
+e , por isso, não realizarmos arredondamentos.\par
+
+Seguidamente, seguindo a regra de algibeira dada, temos então de transformar estas dependências de n por funções que sejam também elas
+recursivas.
+
+Definimos assim as seguintes funções : 
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{f}\;\Varid{n}\mathrel{=}(\mathrm{2}\;\Varid{n}\mathbin{+}\mathrm{2})\mathbin{*}(\mathrm{2}\;\Varid{n}\mathbin{+}\mathrm{1}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{faux}\;\Varid{n}\mathrel{=}\mathrm{8}\;\Varid{n}\mathbin{+}\mathrm{10}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{h}\;\Varid{n}\mathrel{=}(\Varid{n}\mathbin{+}\mathrm{2})\mathbin{*}(\Varid{n}\mathbin{+}\mathrm{1}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{haux}\;\Varid{n}\mathrel{=}\mathrm{2}\;\Varid{n}\mathbin{+}\mathrm{4}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Após isto é apenas aplicar de forma direta a regra dada.\par
+
 \subsection*{Problema 3}
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{calcLine}\mathbin{::}\Conid{NPoint}\to (\Conid{NPoint}\to \Conid{OverTime}\;\Conid{NPoint}){}\<[E]%
 \\
 \>[B]{}\Varid{calcLine}\mathrel{=}\Varid{cataList}\;\Varid{h}\;\mathbf{where}{}\<[E]%
 \\
-\>[B]{}\hsindent{4}{}\<[4]%
-\>[4]{}\Varid{h}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{h}\mathrel{=}\alt{\Varid{h1}}{\Varid{h2}}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{h1}\;\Varid{x}\mathrel{=}\underline{\Varid{nil}}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{h2}\;(\Varid{d},\Varid{f})\;[\mskip1.5mu \mskip1.5mu]\mathrel{=}\Varid{nil}{}\<[E]%
+\\
+\>[B]{}\hsindent{5}{}\<[5]%
+\>[5]{}\Varid{h2}\;(\Varid{d},\Varid{f})\;(\Varid{x}\mathbin{:}\Varid{xs})\mathrel{=}\lambda \Varid{z}\to \Varid{concat}\mathbin{\$}(\Varid{sequenceA}\;[\mskip1.5mu \Varid{singl}\comp \Varid{linear1d}\;\Varid{d}\;\Varid{x},\Varid{f}\;\Varid{xs}\mskip1.5mu])\;\Varid{z}{}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{deCasteljau}\mathbin{::}[\mskip1.5mu \Conid{NPoint}\mskip1.5mu]\to \Conid{OverTime}\;\Conid{NPoint}{}\<[E]%
 \\
@@ -1702,28 +1866,41 @@ Solução para listas não vazias:
 \ColumnHook
 \end{hscode}\resethooks
 
+Para este problema é necessário definir o "conjunto de leis" dos catamorfismos para listas não vazia.Assim,definimos o \emph{inNVl}, o \emph{outNVL}, o \emph{recNVL} e claro, por fim, o \emph{cataNVL} 
+
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{11}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{8}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{avg\char95 aux}\mathrel{=}\Varid{cataList}\;\alt{\conj{\Varid{singl}}{\underline{\mathrm{1}}}}{\conj{\Varid{gaux2}}{\Varid{g2}}}\;\mathbf{where}{}\<[E]%
+\>[B]{}\Varid{inNVL}\mathrel{=}\alt{\Varid{singl}}{\Varid{cons}}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{outNVL}\;[\mskip1.5mu \Varid{x}\mskip1.5mu]\mathrel{=}i_1\;\Varid{x}{}\<[E]%
 \\
-\>[B]{}\hsindent{11}{}\<[11]%
-\>[11]{}\Varid{g2}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}\mathrm{1}\mathbin{+}\Varid{len}{}\<[E]%
+\>[B]{}\Varid{outNVL}\;(\Varid{a}\mathbin{:}\Varid{l})\mathrel{=}i_2\;(\Varid{a},\Varid{l}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{recNVL}\;\Varid{f}\mathrel{=}\Varid{id}+\Varid{id}\times\Varid{f}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{cataNVL}\;\Varid{g}\mathrel{=}\Varid{g}\comp \Varid{recNVL}\;(\Varid{cataNVL}\;\Varid{g})\comp \Varid{outNVL}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{avg\char95 aux}\mathrel{=}\Varid{cataNVL}\;\alt{\conj{\Varid{id}}{\underline{\mathrm{1}}}}{\conj{\Varid{gaux22}}{\succ \comp \p2\comp \p2}}\;\mathbf{where}{}\<[E]%
 \\
-\>[B]{}\hsindent{11}{}\<[11]%
-\>[11]{}\Varid{gaux2}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}(\Varid{x}\mathbin{+}\Varid{len}\mathbin{*}\Varid{avg})\mathbin{/}(\mathrm{1}\mathbin{+}\Varid{len}){}\<[E]%
+\>[B]{}\hsindent{8}{}\<[8]%
+\>[8]{}\Varid{gaux22}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}(\Varid{x}\mathbin{+}\Varid{len}\mathbin{*}\Varid{avg})\mathbin{/}(\mathrm{1}\mathbin{+}\Varid{len}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 Solução para árvores de tipo \LTree:
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{9}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{avgLTree}\mathrel{=}\p1\comp \llparenthesis\, \Varid{gene}\,\rrparenthesis\;\mathbf{where}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
-\>[4]{}\Varid{gene}\mathrel{=}\bot {}\<[E]%
+\>[4]{}\Varid{gene}\mathrel{=}\alt{\conj{\Varid{id}}{\underline{\mathrm{1}}}}{\conj{\Varid{avgLTreeaux}}{\uncurry{(\mathbin{+})}\comp (\p2\times\p2)}}\;\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{5}{}\<[9]%
+\>[9]{}\Varid{avgLTreeaux}\;((\Varid{avgLeft},\Varid{lenLeft}),(\Varid{avgRight},\Varid{lenRight}))\mathrel{=}((\Varid{avgLeft}\mathbin{*}\Varid{lenLeft})\mathbin{+}(\Varid{avgRight}\mathbin{*}\Varid{lenRight}))\mathbin{/}(\Varid{lenLeft}\mathbin{+}\Varid{lenRight}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 

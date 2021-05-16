@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2021.4.17)  5 MAY 2021 00:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2021.5.5)  17 MAY 2021 00:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -783,24 +783,128 @@ Overfull \hbox (8.57883pt too wide) in paragraph at lines 1428--1477
  []
 
 [12]
-Overfull \hbox (103.62514pt too wide) in paragraph at lines 1605--1616
+Overfull \hbox (1.30096pt too wide) in paragraph at lines 1587--1589
+[]\OT1/ppl/m/n/10 A fun[][]ao eval[]exp []e um ca-ta-mor-fismo, logo te-mos de 
+de-fi-nir o gene desta. As-sim, a fun[][]ao g[]eval[]exp
+ []
+
+<xymatrix 2x2 191>
+LaTeX Font Info:    Trying to load font information for OMS+ppl on input line 1
+670.
+ (/usr/share/texmf-dist/tex/latex/psnfss/omsppl.fd
+File: omsppl.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 1670.
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
  [][] 
  []
 
 
-Overfull \hbox (103.62514pt too wide) in paragraph at lines 1605--1616
- [][][][] 
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
  []
 
 
-Overfull \hbox (103.62514pt too wide) in paragraph at lines 1605--1616
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
+ []
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
+ []
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
+ []
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
+ []
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
+ []
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
+ [][] 
+ []
+
+
+Overfull \hbox (371.37643pt too wide) in paragraph at lines 1643--1670
  [][] 
  []
 
 [13]
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+
+Overfull \hbox (103.62514pt too wide) in paragraph at lines 1685--1715
+ [][][][] 
+ []
+
+[14] [15]
+Overfull \hbox (123.67046pt too wide) in paragraph at lines 1892--1905
+ [][] 
+ []
+
+
+Overfull \hbox (123.67046pt too wide) in paragraph at lines 1892--1905
+ [][][][] 
+ []
+
+
+Overfull \hbox (123.67046pt too wide) in paragraph at lines 1892--1905
+ [][][][] 
+ []
+
 No file cp2021t.ind.
 No file cp2021t.bbl.
-[14] (./cp2021t.aux)
+[16] (./cp2021t.aux)
 Package rerunfilecheck Info: File `cp2021t.out' has not changed.
 (rerunfilecheck)             Checksum: 7ABFEEFBC6EDEE4EAEC2BDEF142178CE;514.
 
@@ -809,10 +913,10 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 13605 strings out of 479383
- 198963 string characters out of 5875830
+ 13634 strings out of 479383
+ 199398 string characters out of 5875831
  596954 words of memory out of 5000000
- 30309 multiletter control sequences out of 15000+600000
+ 30333 multiletter control sequences out of 15000+600000
  439071 words of font info for 128 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  66i,18n,74p,3290b,517s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -839,10 +943,10 @@ urw/palatino/uplr8a.pfb></usr/share/texmf-dist/fonts/type1/urw/palatino/uplr8a.
 pfb></usr/share/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb></usr/share/tex
 mf-dist/fonts/type1/public/xypic/xyatip10.pfb></usr/share/texmf-dist/fonts/type
 1/public/xypic/xybtip10.pfb>
-Output written on cp2021t.pdf (14 pages, 331522 bytes).
+Output written on cp2021t.pdf (16 pages, 343389 bytes).
 PDF statistics:
- 355 PDF objects out of 1000 (max. 8388607)
- 306 compressed objects within 4 object streams
- 72 named destinations out of 1000 (max. 500000)
+ 365 PDF objects out of 1000 (max. 8388607)
+ 314 compressed objects within 4 object streams
+ 74 named destinations out of 1000 (max. 500000)
  70 words of extra memory for PDF output out of 10000 (max. 10000000)
 
