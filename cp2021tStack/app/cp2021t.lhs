@@ -1187,7 +1187,7 @@ De notar que decidimos agrupar a chamada de C\_n com ((2n +2) * (2n +1)) e só d
 e , por isso, não realizarmos arredondamentos.\par
 
 Seguidamente, seguindo a regra de algibeira dada, temos então de transformar estas dependências de n por funções que sejam também elas
-recursivas.
+recursivas e não dependam de n.
 
 Definimos assim as seguintes funções : 
 \begin{spec}
@@ -1215,6 +1215,31 @@ calcLine = cataList h where
     h2(d,f) [] = nil
     h2(d,f) (x:xs) = \z -> concat $ (sequenceA [singl . linear1d d x, f xs]) z
 
+\end{code}
+
+Para definir o catamorfismo \emph{calcLine} baseamo-nos na função auxiliar dada e transformamo-la num catamorfismo.
+Assim, temos que o diagrama deste catamorfismo é : 
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |NPoint|
+           \ar[d]_-{|calcLine|}
+&
+    |1 + Q * NPoint|
+           \ar[d]^{|id + id * calcLine|}
+           \ar[l]_-{|in|}
+\\
+     |(NPoint -> OverTime NPoint)|
+&
+     |1 + Q * (Npoint -> OverTime NPoint) | 
+           \ar[l]^-{|h|}
+}
+\end{eqnarray*}
+
+Deste modo o gene torna-se fácil de compreender. Caso a lista recebida seja vazia temos dedar uma função que receba 2 argumentos 
+e produza a lista vazia. Caso contrário temos o "passo de recursão" e o que temos de fazer é calcular a tal interpolação linear.
+
+\begin{code}
 deCasteljau :: [NPoint] -> OverTime NPoint
 deCasteljau = hyloAlgForm alg coalg where
    coalg = undefined
@@ -1230,8 +1255,71 @@ Solução para listas não vazias:
 avg = p1.avg_aux
 \end{code}
 
-Para este problema é necessário definir o "conjunto de leis" dos catamorfismos para listas não vazia.Assim,definimos o \emph{inNVl}, o \emph{outNVL}, o \emph{recNVL} e claro, por fim, o \emph{cataNVL} 
+Para este problema é necessário definir o "conjunto de leis" dos catamorfismos para listas não vazia.Assim,definimos o \emph{inNVl}, o \emph{outNVL}, o \emph{recNVL} e claro, por fim, o \emph{cataNVL} .
+Depois de termos este conjunto definido temos de olhar para o gene deste catamorfismo e perceber 2 coisas :
 
+    A função length pode ser calculada de forma pointwise seguindo o diagrama.
+
+    \begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |A*|
+           \ar[d]_-{|length|}
+&
+    |A|
+           \ar[d]^{|id + id * <avg,length>|}
+           \ar[l]_-{|inNVL|}
+\\
+     |A|
+&
+     |A + A * (A * A)| 
+           \ar[l]^-{|len_gen|}
+}
+\end{eqnarray*}
+
+A partir deste podemos facilmente obter o gene (len\_gen):
+\begin{spec}
+len_gen = [g1, g2] where 
+g1 x = [x]
+g2 (x,(avg,len)) = 1 + len
+\end{spec}
+
+Mas a partir das leis do cálculo podemos tornar então em pointfree
+
+\begin{eqnarray*}
+\start
+	|g1 x = [x]|
+%
+\just\equiv{ def. singl }
+%
+  | g1 x = singl x|
+%
+\just\equiv{ igualdade extensional }
+%
+  |g1 = singl|
+\qed
+\end{eqnarray*}
+
+Da mesma maneira podemos então a partir de g2 derivar a sua versão pointfree
+
+\begin{eqnarray*}
+\start
+	|g2(x,(avg,len)) = 1 + len|
+%
+\just\equiv{ def. succ }
+%
+  | g2(x,(avg,len)) = succ len|
+%
+\just\equiv{ def.comp, def.proj }
+%
+  |g2(x,(avg,len)) = succ.p2.p2(x,(avg,len))|
+\just\equiv{ igualdade extensional}
+    |g2 = succ.p2.p2|
+\qed
+\end{eqnarray*}
+
+Seguindo o mesmo raciocínio e usando o mesmo diagrama, obtemos a \emph{avg}.\par
+Neste momento temos então um split de eithers mas queremos um either de splits.Momento oportuno para aplicarmos
+a Lei da Troca e obtermos o que abaixo está definido :
 \begin{code}
 
 inNVL = either singl cons
@@ -1244,16 +1332,80 @@ recNVL f = id -|- id >< f
 cataNVL g = g . recNVL (cataNVL g) . outNVL
 
 
-avg_aux = cataNVL (either (split id (const 1)) (split gaux22 (succ.p2.p2)))where
-       gaux22(x,(avg,len)) = (x + len*avg) / (1 + len)
+avg_aux = cataNVL (either (split id (const 1)) (split algorit (succ.p2.p2)))where
+       algorit(x,(avg,len)) = (x + len*avg) / (1 + len)
 
 \end{code}
+
 Solução para árvores de tipo \LTree:
 \begin{code}
 avgLTree = p1.cataLTree gene where
    gene = either (split id (const 1)) (split avgLTreeaux ((uncurry (+)).(p2 >< p2))) where
-        avgLTreeaux((avgLeft,lenLeft),(avgRight,lenRight)) = ((avgLeft*lenLeft) + (avgRight*lenRight)) / (lenLeft +lenRight)
+        avgLTreeaux((avgLeft,lenLeft),(avgRight,lenRight)) = 
+                                ((avgLeft*lenLeft) + (avgRight*lenRight)) / (lenLeft +lenRight)
 \end{code}
+
+Para o tipo LTree podemos também, mais uma vez, aproveitar o diagrama para construirmos o gene deste catamorfismo.
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |LTree A|
+           \ar[d]_-{|split avgLTree lenLTree|}
+&
+    |A + (LTree A * LTree A)|
+           \ar[d]^{|id + (split avgLTree lenLTree, split avgLTree lenLTree)|}
+           \ar[l]_-{|inLTree|}
+\\
+     |A * A|
+&
+     |A + ((A * A) * (A * A))| 
+           \ar[l]^-{|tree_gen|}
+}
+\end{eqnarray*}
+
+Obtemos então o seguinte gene para a len desta àrvore:
+\begin{spec}
+lenLTree (Leaf) = 1
+lenLTree (Fork(e,d)) = lenLTree e + lenLTree d
+\end{spec}
+
+Usando as leis do cálculo obtemos então : 
+
+\begin{eqnarray*}
+\start
+  |lcbr(
+		lenLTree(Leaf) = 1
+	 )(
+    lenLTree (Fork(e,d)) = lenLTree e + lenLTree d
+	)|
+%
+\just\equiv{ def.comp, def-const, def-x }
+%
+  |lcbr(
+		(lenLTree . Leaf) x = (const 1) x
+	 )(
+    (lenLTree .Fork)(e,d) = uncurry(+) . (lenLTree * lenLTree) (e,d)
+	)|
+%
+\just\equiv{ def.split, def.proj,igualdade extensional }
+%
+|lcbr(
+		(lenLTree . Leaf)= (const 1)
+	 )(
+    (lenLTree .Fork) = uncurry(+) . (p2 . split avgLTree lenLTree , p2 . split avgLTree lenLTree)
+	)|
+%
+\just\equiv{ def. inLtree, def.funtor-x, eq-+,def-fusao}
+    |lenLTree . inLtree = either (const 1) (uncurry(+) . (p2 * p2) . (split avgLTree lenLTree ,split avgLTree lenLTree))|
+%
+\just\equiv{ def.absorçao-+,def-funtor,universal-cata}
+    |len = cataLTree ((const 1), (uncurry(+).(p2 * p2)))|
+\qed
+\end{eqnarray*}
+
+Para o gene do avgLTree decidimos deixar em versão pointwise porque é de mais fácil leitura e é a aplicação
+direta do algoritmo dado.
+Para finalizar, como na definição anterior, temos um split de eithers e queremos então um either de splits,usamos
+por isso a Lei da troca e obtemos a definição que nós propusemos.\par
 
 \subsection*{Problema 5}
 Inserir em baixo o código \Fsharp\ desenvolvido, entre \verb!\begin{verbatim}! e \verb!\end{verbatim}!:
