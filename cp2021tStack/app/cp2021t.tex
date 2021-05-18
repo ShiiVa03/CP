@@ -307,13 +307,12 @@
 \begin{tabular}{ll}
 \textbf{Grupo} nr. & 999 (preencher)
 \\\hline
-a11111 & Nome1 (preencher)
+a93322 & Tiago Costa (preencher)
 \\
-a22222 & Nome2 (preencher)
+a93227 & Pedro Paulo Tavares (preencher)
 \\
-a33333 & Nome3 (preencher)
+a93221 & André Vaz (preencher)
 \\
-a44444 & Nome4 (preencher, se aplicável, ou apagar)
 \end{tabular}
 \end{center}
 
@@ -1801,7 +1800,7 @@ De notar que decidimos agrupar a chamada de C\_n com ((2n +2) * (2n +1)) e só d
 e , por isso, não realizarmos arredondamentos.\par
 
 Seguidamente, seguindo a regra de algibeira dada, temos então de transformar estas dependências de n por funções que sejam também elas
-recursivas.
+recursivas e não dependam de n.
 
 Definimos assim as seguintes funções : 
 \begin{hscode}\SaveRestoreHook
@@ -1823,7 +1822,6 @@ Após isto é apenas aplicar de forma direta a regra dada.\par
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{5}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{calcLine}\mathbin{::}\Conid{NPoint}\to (\Conid{NPoint}\to \Conid{OverTime}\;\Conid{NPoint}){}\<[E]%
@@ -1841,7 +1839,35 @@ Após isto é apenas aplicar de forma direta a regra dada.\par
 \\
 \>[B]{}\hsindent{5}{}\<[5]%
 \>[5]{}\Varid{h2}\;(\Varid{d},\Varid{f})\;(\Varid{x}\mathbin{:}\Varid{xs})\mathrel{=}\lambda \Varid{z}\to \Varid{concat}\mathbin{\$}(\Varid{sequenceA}\;[\mskip1.5mu \Varid{singl}\comp \Varid{linear1d}\;\Varid{d}\;\Varid{x},\Varid{f}\;\Varid{xs}\mskip1.5mu])\;\Varid{z}{}\<[E]%
-\\[\blanklineskip]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Para definir o catamorfismo \emph{calcLine} baseamo-nos na função auxiliar dada e transformamo-la num catamorfismo.
+Assim, temos que o diagrama deste catamorfismo é : 
+
+\begin{eqnarray*}
+\xymatrix@C=2cm{
+    \ensuremath{\Conid{NPoint}}
+           \ar[d]_-{\ensuremath{\Varid{calcLine}}}
+&
+    \ensuremath{\mathrm{1}\mathbin{+}\Conid{Q}\mathbin{*}\Conid{NPoint}}
+           \ar[d]^{\ensuremath{\Varid{id}\mathbin{+}\Varid{id}\mathbin{*}\Varid{calcLine}}}
+           \ar[l]_-{\ensuremath{\mathbf{in}}}
+\\
+     \ensuremath{(\Conid{NPoint}\to \Conid{OverTime}\;\Conid{NPoint})}
+&
+     \ensuremath{\mathrm{1}\mathbin{+}\Conid{Q}\mathbin{*}(\Conid{Npoint}\to \Conid{OverTime}\;\Conid{NPoint})} 
+           \ar[l]^-{\ensuremath{\Varid{h}}}
+}
+\end{eqnarray*}
+
+Deste modo o gene torna-se fácil de compreender. Caso a lista recebida seja vazia temos dedar uma função que receba 2 argumentos 
+e produza a lista vazia. Caso contrário temos o "passo de recursão" e o que temos de fazer é calcular a tal interpolação linear.
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{deCasteljau}\mathbin{::}[\mskip1.5mu \Conid{NPoint}\mskip1.5mu]\to \Conid{OverTime}\;\Conid{NPoint}{}\<[E]%
 \\
 \>[B]{}\Varid{deCasteljau}\mathrel{=}\Varid{hyloAlgForm}\;\Varid{alg}\;\Varid{coalg}\;\mathbf{where}{}\<[E]%
@@ -1866,8 +1892,76 @@ Solução para listas não vazias:
 \ColumnHook
 \end{hscode}\resethooks
 
-Para este problema é necessário definir o "conjunto de leis" dos catamorfismos para listas não vazia.Assim,definimos o \emph{inNVl}, o \emph{outNVL}, o \emph{recNVL} e claro, por fim, o \emph{cataNVL} 
+Para este problema é necessário definir o "conjunto de leis" dos catamorfismos para listas não vazia.Assim,definimos o \emph{inNVl}, o \emph{outNVL}, o \emph{recNVL} e claro, por fim, o \emph{cataNVL} .
+Depois de termos este conjunto definido temos de olhar para o gene deste catamorfismo e perceber 2 coisas :
 
+    A função length pode ser calculada de forma pointwise seguindo o diagrama.
+
+    \begin{eqnarray*}
+\xymatrix@C=2cm{
+    \ensuremath{\Conid{A}\mathbin{*}}
+           \ar[d]_-{\ensuremath{\length }}
+&
+    \ensuremath{\Conid{A}}
+           \ar[d]^{\ensuremath{\Varid{id}\mathbin{+}\Varid{id}\mathbin{*}\mathbin{<}\Varid{avg},\length \mathbin{>}}}
+           \ar[l]_-{\ensuremath{\Varid{inNVL}}}
+\\
+     \ensuremath{\Conid{A}}
+&
+     \ensuremath{\Conid{A}\mathbin{+}\Conid{A}\mathbin{*}(\Conid{A}\mathbin{*}\Conid{A})} 
+           \ar[l]^-{\ensuremath{\Varid{len\char95 gen}}}
+}
+\end{eqnarray*}
+
+A partir deste podemos facilmente obter o gene (len\_gen):
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{len\char95 gen}\mathrel{=}[\mskip1.5mu \Varid{g1},\Varid{g2}\mskip1.5mu]\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\Varid{g1}\;\Varid{x}\mathrel{=}[\mskip1.5mu \Varid{x}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{g2}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}\mathrm{1}\mathbin{+}\Varid{len}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Mas a partir das leis do cálculo podemos tornar então em pointfree
+
+\begin{eqnarray*}
+\start
+	\ensuremath{\Varid{g1}\;\Varid{x}\mathrel{=}[\mskip1.5mu \Varid{x}\mskip1.5mu]}
+%
+\just\equiv{ def. singl }
+%
+  \ensuremath{\Varid{g1}\;\Varid{x}\mathrel{=}\Varid{singl}\;\Varid{x}}
+%
+\just\equiv{ igualdade extensional }
+%
+  \ensuremath{\Varid{g1}\mathrel{=}\Varid{singl}}
+\qed
+\end{eqnarray*}
+
+Da mesma maneira podemos então a partir de g2 derivar a sua versão pointfree
+
+\begin{eqnarray*}
+\start
+	\ensuremath{\Varid{g2}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}\mathrm{1}\mathbin{+}\Varid{len}}
+%
+\just\equiv{ def. succ }
+%
+  \ensuremath{\Varid{g2}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}\succ \;\Varid{len}}
+%
+\just\equiv{ def.comp, def.proj }
+%
+  \ensuremath{\Varid{g2}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}\succ \comp \p2\comp \p2\;(\Varid{x},(\Varid{avg},\Varid{len}))}
+\just\equiv{ igualdade extensional}
+    \ensuremath{\Varid{g2}\mathrel{=}\succ \comp \p2\comp \p2}
+\qed
+\end{eqnarray*}
+
+Seguindo o mesmo raciocínio e usando o mesmo diagrama, obtemos a \emph{avg}.\par
+Neste momento temos então um split de eithers mas queremos um either de splits.Momento oportuno para aplicarmos
+a Lei da Troca e obtermos o que abaixo está definido :
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{8}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -1882,17 +1976,19 @@ Para este problema é necessário definir o "conjunto de leis" dos catamorfismos
 \\[\blanklineskip]%
 \>[B]{}\Varid{cataNVL}\;\Varid{g}\mathrel{=}\Varid{g}\comp \Varid{recNVL}\;(\Varid{cataNVL}\;\Varid{g})\comp \Varid{outNVL}{}\<[E]%
 \\[\blanklineskip]%
-\>[B]{}\Varid{avg\char95 aux}\mathrel{=}\Varid{cataNVL}\;\alt{\conj{\Varid{id}}{\underline{\mathrm{1}}}}{\conj{\Varid{gaux22}}{\succ \comp \p2\comp \p2}}\;\mathbf{where}{}\<[E]%
+\>[B]{}\Varid{avg\char95 aux}\mathrel{=}\Varid{cataNVL}\;\alt{\conj{\Varid{id}}{\underline{\mathrm{1}}}}{\conj{\Varid{algorit}}{\succ \comp \p2\comp \p2}}\;\mathbf{where}{}\<[E]%
 \\
 \>[B]{}\hsindent{8}{}\<[8]%
-\>[8]{}\Varid{gaux22}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}(\Varid{x}\mathbin{+}\Varid{len}\mathbin{*}\Varid{avg})\mathbin{/}(\mathrm{1}\mathbin{+}\Varid{len}){}\<[E]%
+\>[8]{}\Varid{algorit}\;(\Varid{x},(\Varid{avg},\Varid{len}))\mathrel{=}(\Varid{x}\mathbin{+}\Varid{len}\mathbin{*}\Varid{avg})\mathbin{/}(\mathrm{1}\mathbin{+}\Varid{len}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
+
 Solução para árvores de tipo \LTree:
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{9}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{33}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{avgLTree}\mathrel{=}\p1\comp \llparenthesis\, \Varid{gene}\,\rrparenthesis\;\mathbf{where}{}\<[E]%
 \\
@@ -1900,15 +1996,175 @@ Solução para árvores de tipo \LTree:
 \>[4]{}\Varid{gene}\mathrel{=}\alt{\conj{\Varid{id}}{\underline{\mathrm{1}}}}{\conj{\Varid{avgLTreeaux}}{\uncurry{(\mathbin{+})}\comp (\p2\times\p2)}}\;\mathbf{where}{}\<[E]%
 \\
 \>[4]{}\hsindent{5}{}\<[9]%
-\>[9]{}\Varid{avgLTreeaux}\;((\Varid{avgLeft},\Varid{lenLeft}),(\Varid{avgRight},\Varid{lenRight}))\mathrel{=}((\Varid{avgLeft}\mathbin{*}\Varid{lenLeft})\mathbin{+}(\Varid{avgRight}\mathbin{*}\Varid{lenRight}))\mathbin{/}(\Varid{lenLeft}\mathbin{+}\Varid{lenRight}){}\<[E]%
+\>[9]{}\Varid{avgLTreeaux}\;((\Varid{avgLeft},\Varid{lenLeft}),(\Varid{avgRight},\Varid{lenRight}))\mathrel{=}{}\<[E]%
+\\
+\>[9]{}\hsindent{24}{}\<[33]%
+\>[33]{}((\Varid{avgLeft}\mathbin{*}\Varid{lenLeft})\mathbin{+}(\Varid{avgRight}\mathbin{*}\Varid{lenRight}))\mathbin{/}(\Varid{lenLeft}\mathbin{+}\Varid{lenRight}){}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
+
+Para o tipo LTree podemos também, mais uma vez, aproveitar o diagrama para construirmos o gene deste catamorfismo.
+\begin{eqnarray*}
+\xymatrix@C=2cm{
+    \ensuremath{\mathsf{LTree}\;\Conid{A}}
+           \ar[d]_-{\ensuremath{\conj{\Varid{avgLTree}}{\Varid{lenLTree}}}}
+&
+    \ensuremath{\Conid{A}\mathbin{+}(\mathsf{LTree}\;\Conid{A}\mathbin{*}\mathsf{LTree}\;\Conid{A})}
+           \ar[d]^{\ensuremath{\Varid{id}\mathbin{+}(\conj{\Varid{avgLTree}}{\Varid{lenLTree}},\conj{\Varid{avgLTree}}{\Varid{lenLTree}})}}
+           \ar[l]_-{\ensuremath{\Varid{inLTree}}}
+\\
+     \ensuremath{\Conid{A}\mathbin{*}\Conid{A}}
+&
+     \ensuremath{\Conid{A}\mathbin{+}((\Conid{A}\mathbin{*}\Conid{A})\mathbin{*}(\Conid{A}\mathbin{*}\Conid{A}))} 
+           \ar[l]^-{\ensuremath{\Varid{tree\char95 gen}}}
+}
+\end{eqnarray*}
+
+Obtemos então o seguinte gene para a len desta àrvore:
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{lenLTree}\;(\Conid{Leaf})\mathrel{=}\mathrm{1}{}\<[E]%
+\\
+\>[B]{}\Varid{lenLTree}\;(\Conid{Fork}\;(\Varid{e},\Varid{d}))\mathrel{=}\Varid{lenLTree}\;\Varid{e}\mathbin{+}\Varid{lenLTree}\;\Varid{d}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+Usando as leis do cálculo obtemos então : 
+
+\begin{eqnarray*}
+\start
+  \ensuremath{\begin{lcbr}\Varid{lenLTree}\;(\Conid{Leaf})\mathrel{=}\mathrm{1}\\\Varid{lenLTree}\;(\Conid{Fork}\;(\Varid{e},\Varid{d}))\mathrel{=}\Varid{lenLTree}\;\Varid{e}\mathbin{+}\Varid{lenLTree}\;\Varid{d}\end{lcbr}}
+%
+\just\equiv{ def.comp, def-const, def-x }
+%
+  \ensuremath{\begin{lcbr}(\Varid{lenLTree}\comp \Conid{Leaf})\;\Varid{x}\mathrel{=}\underline{\mathrm{1}}\;\Varid{x}\\(\Varid{lenLTree}\comp \Conid{Fork})\;(\Varid{e},\Varid{d})\mathrel{=}\uncurry{(\mathbin{+})}\comp (\Varid{lenLTree}\mathbin{*}\Varid{lenLTree})\;(\Varid{e},\Varid{d})\end{lcbr}}
+%
+\just\equiv{ def.split, def.proj,igualdade extensional }
+%
+\ensuremath{\begin{lcbr}(\Varid{lenLTree}\comp \Conid{Leaf})\mathrel{=}\underline{\mathrm{1}}\\(\Varid{lenLTree}\comp \Conid{Fork})\mathrel{=}\uncurry{(\mathbin{+})}\comp (\p2\comp \conj{\Varid{avgLTree}}{\Varid{lenLTree}},\p2\comp \conj{\Varid{avgLTree}}{\Varid{lenLTree}})\end{lcbr}}
+%
+\just\equiv{ def. inLtree, def.funtor-x, eq-+,def-fusao}
+    \ensuremath{\Varid{lenLTree}\comp \Varid{inLtree}\mathrel{=}\alt{\underline{\mathrm{1}}}{\uncurry{(\mathbin{+})}\comp (\p2\mathbin{*}\p2)\comp (\conj{\Varid{avgLTree}}{\Varid{lenLTree}},\conj{\Varid{avgLTree}}{\Varid{lenLTree}})}}
+%
+\just\equiv{ def.absorçao-+,def-funtor,universal-cata}
+    \ensuremath{\Varid{len}\mathrel{=}\llparenthesis\, \underline{\mathrm{1}},(\uncurry{(\mathbin{+})}\comp (\p2\mathbin{*}\p2))\,\rrparenthesis}
+\qed
+\end{eqnarray*}
+
+Para o gene do avgLTree decidimos deixar em versão pointwise porque é de mais fácil leitura e é a aplicação
+direta do algoritmo dado.
+Para finalizar, como na definição anterior, temos um split de eithers e queremos então um either de splits,usamos
+por isso a Lei da troca e obtemos a definição que nós propusemos.\par
 
 \subsection*{Problema 5}
 Inserir em baixo o código \Fsharp\ desenvolvido, entre \text{\ttfamily \char92{}begin\char123{}verbatim\char125{}} e \text{\ttfamily \char92{}end\char123{}verbatim\char125{}}:
 
 \begin{tabbing}\ttfamily
-
+~module~BTree\\
+\ttfamily ~\\
+\ttfamily ~open~Cp\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}1\char41{}~Datatype~definition~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~type~BTree\char60{}\char39{}a\char62{}~\char61{}~Empty~\char124{}~Node~of~\char40{}\char39{}a~\char42{}~\char40{}BTree\char60{}\char39{}a\char62{}~\char42{}~BTree\char60{}\char39{}a\char62{}\char41{}\char41{}\\
+\ttfamily ~\\
+\ttfamily ~let~inBTree~x~\char61{}~either~\char40{}konst~Empty\char41{}~Node~x\\
+\ttfamily ~\\
+\ttfamily ~let~outBTree~x~\char61{}\\
+\ttfamily ~~~~~match~x~with\\
+\ttfamily ~~~~~\char124{}~Empty~\char45{}\char62{}~i1~\char40{}\char41{}\\
+\ttfamily ~~~~~\char124{}~Node~\char40{}y\char44{}\char40{}t1\char44{}t2\char41{}\char41{}~\char45{}\char62{}~i2~\char40{}y\char44{}\char40{}t1\char44{}t2\char41{}\char41{}\\
+\ttfamily ~\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}2\char41{}~Ana~\char43{}~cata~\char43{}~hylo~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\char47{}\char47{}~recBTree~g~\char61{}~id~\char45{}\char124{}\char45{}~\char40{}id~\char62{}\char60{}~\char40{}g~\char62{}\char60{}~g\char41{}\char41{}\\
+\ttfamily ~\\
+\ttfamily ~let~baseBTree~f~g~\char61{}~id~\char45{}\char124{}\char45{}~\char40{}f~\char62{}\char60{}~\char40{}g~\char62{}\char60{}~g\char41{}\char41{}\\
+\ttfamily ~\\
+\ttfamily ~let~recBTree~g~\char61{}~baseBTree~id~g~~~~~~~~~\\
+\ttfamily ~let~rec~cataBTree~a~\char61{}~a~\char60{}\char60{}~\char40{}recBTree~\char40{}cataBTree~a\char41{}\char41{}~\char60{}\char60{}~outBTree\\
+\ttfamily ~\\
+\ttfamily ~let~rec~anaBTree~f~\char61{}~inBTree~\char60{}\char60{}~\char40{}recBTree~\char40{}anaBTree~f\char41{}~\char41{}~\char60{}\char60{}~f\\
+\ttfamily ~\\
+\ttfamily ~let~hyloBTree~a~c~\char61{}~cataBTree~a~\char60{}\char60{}~anaBTree~c\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}3\char41{}~Map~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~fmap~f~\char61{}~cataBTree~\char40{}~inBTree~\char60{}\char60{}~baseBTree~f~id~\char41{}\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char41{}~Examples~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char46{}1\char41{}~Inversion~\char40{}mirror\char41{}~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~invBTree~x~\char61{}~~cataBTree~\char40{}inBTree~\char60{}\char60{}~\char40{}id~\char45{}\char124{}\char45{}~\char40{}id~\char62{}\char60{}~swap\char41{}\char41{}\char41{}~x\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char46{}2\char41{}~Counting~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~countBTree~x~\char61{}~cataBTree~\char40{}either~\char40{}konst~0\char41{}~\char40{}succ~\char60{}\char60{}~\char40{}uncurry~\char40{}\char43{}\char41{}\char41{}~\char60{}\char60{}~p2\char41{}\char41{}~x\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char46{}3\char41{}~Serialization~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~inord~y~\char61{}~\\
+\ttfamily ~~~~~~~~~let~join\char40{}x\char44{}\char40{}l\char44{}r\char41{}\char41{}\char61{}l\char64{}\char91{}x\char93{}\char64{}r\\
+\ttfamily ~~~~~~~~~in~either~nil~join~y\\
+\ttfamily ~~~\\
+\ttfamily ~\\
+\ttfamily ~let~inordt~x~\char61{}~cataBTree~\char40{}inord\char41{}~x\\
+\ttfamily ~\\
+\ttfamily ~let~preord~x~\char61{}~\\
+\ttfamily ~~~~~~~~~~~~let~f\char40{}x\char44{}\char40{}l\char44{}r\char41{}\char41{}\char61{}x\char58{}\char58{}l\char64{}r\\
+\ttfamily ~~~~~~~~~~~~in~\char40{}either~nil~f\char41{}~x\\
+\ttfamily ~\\
+\ttfamily ~let~preordt~x~\char61{}~cataBTree~preord~x\\
+\ttfamily ~\\
+\ttfamily ~let~postordt~x~\char61{}~\\
+\ttfamily ~~~~~~~~~let~f\char40{}x\char44{}\char40{}l\char44{}r\char41{}\char41{}\char61{}l\char64{}r\char64{}\char91{}x\char93{}\\
+\ttfamily ~~~~~~~~~in~cataBTree~\char40{}either~nil~f\char41{}~x\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char46{}4\char41{}~Quicksort~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~rec~part~p~li~\char61{}\\
+\ttfamily ~~~~~~~~match~li~with\\
+\ttfamily ~~~~~~~~\char124{}\char91{}\char93{}~\char45{}\char62{}~\char40{}\char91{}\char93{}\char44{}\char91{}\char93{}\char41{}\\
+\ttfamily ~~~~~~~~\char124{}\char40{}h\char58{}\char58{}t\char41{}~\char45{}\char62{}~if~not\char40{}p~h\char41{}~then~let~\char40{}s\char44{}l\char41{}~\char61{}~part~p~t~in~\char40{}h\char58{}\char58{}s\char44{}l\char41{}~else~let~\char40{}s\char44{}l\char41{}~\char61{}~part~p~t~in~\char40{}s\char44{}h\char58{}\char58{}l\char41{}~\\
+\ttfamily ~\\
+\ttfamily ~\\
+\ttfamily ~let~qsep~li~\char61{}\\
+\ttfamily ~~~~~match~li~with\\
+\ttfamily ~~~~~\char124{}~\char91{}\char93{}~\char45{}\char62{}~i1~\char40{}\char41{}\\
+\ttfamily ~~~~~\char124{}~\char40{}h\char58{}\char58{}t\char41{}~\char45{}\char62{}~i2\char40{}h\char44{}\char40{}part~\char40{}\char40{}\char60{}\char41{}~h\char41{}~t\char41{}~\char41{}\\
+\ttfamily ~\\
+\ttfamily ~let~qSort~x~\char61{}~hyloBTree~inord~qsep~x\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char46{}5\char41{}~Traces~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~tunion\char40{}a\char44{}\char40{}l\char44{}r\char41{}\char41{}~\char61{}~\char40{}List\char46{}map~\char40{}List\char46{}append~\char91{}a\char93{}\char41{}~l\char41{}\char64{}\char40{}List\char46{}map\char40{}List\char46{}append~\char91{}a\char93{}\char41{}~r\char41{}~\\
+\ttfamily ~\\
+\ttfamily ~let~traces~x~\char61{}~cataBTree~\char40{}either~\char40{}konst~\char91{}\char91{}\char93{}\char93{}\char41{}~tunion\char41{}~x\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}4\char46{}6\char41{}~Towers~of~Hanoi~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~let~present~x~\char61{}~inord~x\\
+\ttfamily ~\\
+\ttfamily ~let~strategy~\char40{}d\char44{}x\char41{}~\char61{}~\\
+\ttfamily ~~~~~~~~~match~x~with\\
+\ttfamily ~~~~~~~~~\char124{}0~\char45{}\char62{}~Left~\char40{}\char41{}\\
+\ttfamily ~~~~~~~~~\char124{}\char95{}~\char45{}\char62{}~Right~\char40{}\char40{}x\char45{}1\char44{}d\char41{}\char44{}\char40{}\char40{}not~d\char44{}x\char45{}1\char41{}\char44{}\char40{}not~d\char44{}x\char45{}1\char41{}\char41{}\char41{}\\
+\ttfamily ~\\
+\ttfamily ~let~hanoi~x~\char61{}~hyloBTree~present~strategy~x\\
+\ttfamily ~\\
+\ttfamily ~\char47{}\char47{}~\char40{}5\char41{}~Depth~and~balancing~\char40{}using~mutual~recursion\char41{}~\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\char45{}\\
+\ttfamily ~\\
+\ttfamily ~\\
+\ttfamily ~let~baldepth~x~\char61{}~\\
+\ttfamily ~~~~~~~~~let~f\char40{}\char40{}b1\char44{}d1\char41{}\char44{}\char40{}b2\char44{}d2\char41{}\char41{}~\char61{}~\char40{}\char40{}b1\char44{}b2\char41{}\char44{}\char40{}d1\char44{}d2\char41{}\char41{}~\\
+\ttfamily ~~~~~~~~~let~h\char40{}a\char44{}\char40{}\char40{}b1\char44{}b2\char41{}\char44{}\char40{}d1\char44{}d2\char41{}\char41{}\char41{}~\char61{}~\char40{}b1~\char38{}\char38{}~b2~\char38{}\char38{}~abs\char40{}d1\char45{}d2\char41{}\char60{}\char61{}1\char44{}1\char43{}max~d1~d2\char41{}\\
+\ttfamily ~~~~~~~~~let~g~x~\char61{}~either~\char40{}konst\char40{}true\char44{}1\char41{}\char41{}~\char40{}h\char60{}\char60{}\char40{}id\char62{}\char60{}f\char41{}\char41{}~x~\\
+\ttfamily ~~~~~~~~~in~cataBTree~g~x\\
+\ttfamily ~\\
+\ttfamily ~let~depthBTree~x~\char61{}~p2\char40{}baldepth~x\char41{}\\
+\ttfamily ~let~balBTree~x~\char61{}~p1\char40{}baldepth~x\char41{}~
 \end{tabbing}
 
 %----------------- Fim do anexo com soluções dos alunos ------------------------%

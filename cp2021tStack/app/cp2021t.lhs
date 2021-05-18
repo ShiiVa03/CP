@@ -129,13 +129,12 @@
 \begin{tabular}{ll}
 \textbf{Grupo} nr. & 999 (preencher)
 \\\hline
-a11111 & Nome1 (preencher)
+a93322 & Tiago Costa (preencher)
 \\
-a22222 & Nome2 (preencher)
+a93227 & Pedro Paulo Tavares (preencher)
 \\
-a33333 & Nome3 (preencher)
+a93221 & André Vaz (preencher)
 \\
-a44444 & Nome4 (preencher, se aplicável, ou apagar)
 \end{tabular}
 \end{center}
 
@@ -1411,6 +1410,110 @@ por isso a Lei da troca e obtemos a definição que nós propusemos.\par
 Inserir em baixo o código \Fsharp\ desenvolvido, entre \verb!\begin{verbatim}! e \verb!\end{verbatim}!:
 
 \begin{verbatim}
+module BTree
+
+open Cp
+
+// (1) Datatype definition --------------------------------------------------
+
+type BTree<'a> = Empty | Node of ('a * (BTree<'a> * BTree<'a>))
+
+let inBTree x = either (konst Empty) Node x
+
+let outBTree x =
+    match x with
+    | Empty -> i1 ()
+    | Node (y,(t1,t2)) -> i2 (y,(t1,t2))
+
+
+// (2) Ana + cata + hylo -------------------------------------------------------
+// recBTree g = id -|- (id >< (g >< g))
+
+let baseBTree f g = id -|- (f >< (g >< g))
+
+let recBTree g = baseBTree id g         
+let rec cataBTree a = a << (recBTree (cataBTree a)) << outBTree
+
+let rec anaBTree f = inBTree << (recBTree (anaBTree f) ) << f
+
+let hyloBTree a c = cataBTree a << anaBTree c
+
+// (3) Map ---------------------------------------------------------------------
+
+let fmap f = cataBTree ( inBTree << baseBTree f id )
+
+// (4) Examples ----------------------------------------------------------------
+
+// (4.1) Inversion (mirror) ----------------------------------------------------
+
+let invBTree x =  cataBTree (inBTree << (id -|- (id >< swap))) x
+
+// (4.2) Counting --------------------------------------------------------------
+
+let countBTree x = cataBTree (either (konst 0) (succ << (uncurry (+)) << p2)) x
+
+// (4.3) Serialization ---------------------------------------------------------
+
+let inord y = 
+        let join(x,(l,r))=l@[x]@r
+        in either nil join y
+  
+
+let inordt x = cataBTree (inord) x
+
+let preord x = 
+           let f(x,(l,r))=x::l@r
+           in (either nil f) x
+
+let preordt x = cataBTree preord x
+
+let postordt x = 
+        let f(x,(l,r))=l@r@[x]
+        in cataBTree (either nil f) x
+
+// (4.4) Quicksort -------------------------------------------------------------
+
+let rec part p li =
+       match li with
+       |[] -> ([],[])
+       |(h::t) -> if not(p h) then let (s,l) = part p t in (h::s,l) else let (s,l) = part p t in (s,h::l) 
+
+
+let qsep li =
+    match li with
+    | [] -> i1 ()
+    | (h::t) -> i2(h,(part ((<) h) t) )
+
+let qSort x = hyloBTree inord qsep x
+
+// (4.5) Traces ----------------------------------------------------------------
+
+let tunion(a,(l,r)) = (List.map (List.append [a]) l)@(List.map(List.append [a]) r) 
+
+let traces x = cataBTree (either (konst [[]]) tunion) x
+
+// (4.6) Towers of Hanoi -------------------------------------------------------
+
+let present x = inord x
+
+let strategy (d,x) = 
+        match x with
+        |0 -> Left ()
+        |_ -> Right ((x-1,d),((not d,x-1),(not d,x-1)))
+
+let hanoi x = hyloBTree present strategy x
+
+// (5) Depth and balancing (using mutual recursion) --------------------------
+
+
+let baldepth x = 
+        let f((b1,d1),(b2,d2)) = ((b1,b2),(d1,d2)) 
+        let h(a,((b1,b2),(d1,d2))) = (b1 && b2 && abs(d1-d2)<=1,1+max d1 d2)
+        let g x = either (konst(true,1)) (h<<(id><f)) x 
+        in cataBTree g x
+
+let depthBTree x = p2(baldepth x)
+let balBTree x = p1(baldepth x) 
 \end{verbatim}
 
 %----------------- Fim do anexo com soluções dos alunos ------------------------%
