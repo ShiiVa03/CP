@@ -127,13 +127,13 @@
 
 \begin{center}\large
 \begin{tabular}{ll}
-\textbf{Grupo} nr. & 999 (preencher)
+\textbf{Grupo} nr. & 16
 \\\hline
-a93322 & Tiago Costa (preencher)
+a93322 & Tiago Costa 
 \\
-a93227 & Pedro Paulo Tavares (preencher)
+a93227 & Pedro Paulo Tavares 
 \\
-a93221 & André Vaz (preencher)
+a93221 & André Vaz (
 \\
 \end{tabular}
 \end{center}
@@ -1130,8 +1130,8 @@ sd_gen = (either sd1 (either sd2 (either sd3 sd4))) where
       sd4 (Negate,(a,b)) = (Un Negate a, Un Negate b)
 \end{code}
 
-Como referido a técnica de derivação seguindo \emph{symbolic differentiation} não éa mais efeciente, havendo por isso a possibilidade de
-derivar a expressão no ponto. Assim, o gene deste catamorfismo torna-se fácil de definir. Usando o mesmo diagram definido mais acima neste 
+Como referido a técnica de derivação seguindo \emph{symbolic differentiation} não é a mais efeciente, havendo por isso a possibilidade de
+derivar a expressão no ponto. Assim, o gene deste catamorfismo torna-se fácil de definir. Usando o mesmo diagrama definido mais acima neste 
 documento basta substituir o tipo de retorno por Naturais e, assim, passamos não a lidar com expressões mas sim com números, sendo a derivação mais fácil.\par
 \begin{code}
 ad_gen v = (either g1 (either g2 (either g3 g4))) where
@@ -1239,13 +1239,58 @@ Deste modo o gene torna-se fácil de compreender. Caso a lista recebida seja vaz
 e produza a lista vazia. Caso contrário temos o "passo de recursão" e o que temos de fazer é calcular a tal interpolação linear.
 
 \begin{code}
-deCasteljau :: [NPoint] -> OverTime NPoint
-deCasteljau = hyloAlgForm alg coalg where
-   coalg = undefined
-   alg = undefined
+deCasteljau [] = nil
+deCasteljau l = (hyloAlgForm alg coalg) l where
+   coalg = (id -|- (split(cons . (id >< init)) p2 )) . outNVL
+   alg = either alg1 alg2 where
+     alg1 x = const x
+     alg2(f,g) = \pt -> calcLine (f pt) (g pt) pt
 
-hyloAlgForm = undefined
+hyloAlgForm = hyloLTree
+ 
 \end{code}
+
+Para definirmos o hylomorfismo deste problema baseamo-nos na função auxiliar dada pelo professor.Deste modo inferimos que a estrutura 
+auxiliar que o anamorfismo deveria criar era um LTree em que cada folha (Leaf) tem elementos do tipo NPoint. Assim, aquando da aplicação
+do catamorfismo, basta aplicar ao Fork a função calcLine que obtemos o tipo OverTime NPoint.Partimos também do principio que a lista que recebemos
+não é vazia porque fazemos primeiro essa verificação e , por isso, usamos a definiçao de outNVL para o anamorfismo. Diagrama que fundamenta melhor o esquema do 
+hylomorfismo : 
+
+
+Anamorfismo : 
+\begin{eqnarray*}
+\xymatrix@@C=3cm{
+    |[NPoint]|
+           \ar[d]^-{|coalg|}
+           \ar[r]^-{|(id * (split(cons . (id >< init)) p2)) . outNVL|}
+&
+    |NPoint + [NPoint] * [NPoint]|
+           \ar[d]^-{|id + coalg * coalg|}           
+\\
+     |LTree NPoint|
+&
+     |NPoint + LTree NPoint * LTree NPoint| 
+        \ar[l]^-{|inLTree|}          
+}
+\end{eqnarray*}
+
+Catamorfismo :
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |LTree NPoint|
+           \ar[d]_-{|alg|}
+&
+    |NPoint + LTree NPoint * LTree NPoint|
+           \ar[d]^{|id + alg * alg|}
+           \ar[l]_-{|in|}
+\\
+     |OverTime NPoint|
+&
+     |NPoint + OverTime NPoint * OverTime NPoint| 
+           \ar[l]^-{|either alg1 alg2|}
+}
+\end{eqnarray*}
 
 \subsection*{Problema 4}
 
@@ -1262,9 +1307,9 @@ Depois de termos este conjunto definido temos de olhar para o gene deste catamor
     \begin{eqnarray*}
 \xymatrix@@C=2cm{
     |A*|
-           \ar[d]_-{|length|}
+           \ar[d]_-{|<avg,length>|}
 &
-    |A|
+    |A + A * (A*)|
            \ar[d]^{|id + id * <avg,length>|}
            \ar[l]_-{|inNVL|}
 \\

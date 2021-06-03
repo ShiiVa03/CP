@@ -305,13 +305,13 @@
 
 \begin{center}\large
 \begin{tabular}{ll}
-\textbf{Grupo} nr. & 999 (preencher)
+\textbf{Grupo} nr. & 16
 \\\hline
-a93322 & Tiago Costa (preencher)
+a93322 & Tiago Costa 
 \\
-a93227 & Pedro Paulo Tavares (preencher)
+a93227 & Pedro Paulo Tavares 
 \\
-a93221 & André Vaz (preencher)
+a93221 & André Vaz (
 \\
 \end{tabular}
 \end{center}
@@ -1713,8 +1713,8 @@ pelas várias regras da derivação :
 \ColumnHook
 \end{hscode}\resethooks
 
-Como referido a técnica de derivação seguindo \emph{symbolic differentiation} não éa mais efeciente, havendo por isso a possibilidade de
-derivar a expressão no ponto. Assim, o gene deste catamorfismo torna-se fácil de definir. Usando o mesmo diagram definido mais acima neste 
+Como referido a técnica de derivação seguindo \emph{symbolic differentiation} não é a mais efeciente, havendo por isso a possibilidade de
+derivar a expressão no ponto. Assim, o gene deste catamorfismo torna-se fácil de definir. Usando o mesmo diagrama definido mais acima neste 
 documento basta substituir o tipo de retorno por Naturais e, assim, passamos não a lidar com expressões mas sim com números, sendo a derivação mais fácil.\par
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -1867,20 +1867,69 @@ e produza a lista vazia. Caso contrário temos o "passo de recursão" e o que te
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{6}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{deCasteljau}\mathbin{::}[\mskip1.5mu \Conid{NPoint}\mskip1.5mu]\to \Conid{OverTime}\;\Conid{NPoint}{}\<[E]%
+\>[B]{}\Varid{deCasteljau}\;[\mskip1.5mu \mskip1.5mu]\mathrel{=}\Varid{nil}{}\<[E]%
 \\
-\>[B]{}\Varid{deCasteljau}\mathrel{=}\Varid{hyloAlgForm}\;\Varid{alg}\;\Varid{coalg}\;\mathbf{where}{}\<[E]%
-\\
-\>[B]{}\hsindent{4}{}\<[4]%
-\>[4]{}\Varid{coalg}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{deCasteljau}\;\Varid{l}\mathrel{=}(\Varid{hyloAlgForm}\;\Varid{alg}\;\Varid{coalg})\;\Varid{l}\;\mathbf{where}{}\<[E]%
 \\
 \>[B]{}\hsindent{4}{}\<[4]%
-\>[4]{}\Varid{alg}\mathrel{=}\bot {}\<[E]%
+\>[4]{}\Varid{coalg}\mathrel{=}(\Varid{id}+\conj{\Varid{cons}\comp (\Varid{id}\times\Varid{init})}{\p2})\comp \Varid{outNVL}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{alg}\mathrel{=}\alt{\Varid{alg1}}{\Varid{alg2}}\;\mathbf{where}{}\<[E]%
+\\
+\>[4]{}\hsindent{2}{}\<[6]%
+\>[6]{}\Varid{alg1}\;\Varid{x}\mathrel{=}\underline{\Varid{x}}{}\<[E]%
+\\
+\>[4]{}\hsindent{2}{}\<[6]%
+\>[6]{}\Varid{alg2}\;(\Varid{f},\Varid{g})\mathrel{=}\lambda \Varid{pt}\to \Varid{calcLine}\;(\Varid{f}\;\Varid{pt})\;(\Varid{g}\;\Varid{pt})\;\Varid{pt}{}\<[E]%
 \\[\blanklineskip]%
-\>[B]{}\Varid{hyloAlgForm}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{hyloAlgForm}\mathrel{=}\Varid{hyloLTree}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
+
+Para definirmos o hylomorfismo deste problema baseamo-nos na função auxiliar dada pelo professor.Deste modo inferimos que a estrutura 
+auxiliar que o anamorfismo deveria criar era um LTree em que cada folha (Leaf) tem elementos do tipo NPoint. Assim, aquando da aplicação
+do catamorfismo, basta aplicar ao Fork a função calcLine que obtemos o tipo OverTime NPoint.Partimos também do principio que a lista que recebemos
+não é vazia porque fazemos primeiro essa verificação e , por isso, usamos a definiçao de outNVL para o anamorfismo. Diagrama que fundamenta melhor o esquema do 
+hylomorfismo : 
+
+
+Anamorfismo : 
+\begin{eqnarray*}
+\xymatrix@C=3cm{
+    \ensuremath{[\mskip1.5mu \Conid{NPoint}\mskip1.5mu]}
+           \ar[d]^-{\ensuremath{\Varid{coalg}}}
+           \ar[r]^-{\ensuremath{(\Varid{id}\mathbin{*}\conj{\Varid{cons}\comp (\Varid{id}\times\Varid{init})}{\p2})\comp \Varid{outNVL}}}
+&
+    \ensuremath{\Conid{NPoint}\mathbin{+}[\mskip1.5mu \Conid{NPoint}\mskip1.5mu]\mathbin{*}[\mskip1.5mu \Conid{NPoint}\mskip1.5mu]}
+           \ar[d]^-{\ensuremath{\Varid{id}\mathbin{+}\Varid{coalg}\mathbin{*}\Varid{coalg}}}           
+\\
+     \ensuremath{\mathsf{LTree}\;\Conid{NPoint}}
+&
+     \ensuremath{\Conid{NPoint}\mathbin{+}\mathsf{LTree}\;\Conid{NPoint}\mathbin{*}\mathsf{LTree}\;\Conid{NPoint}} 
+        \ar[l]^-{\ensuremath{\Varid{inLTree}}}          
+}
+\end{eqnarray*}
+
+Catamorfismo :
+
+\begin{eqnarray*}
+\xymatrix@C=2cm{
+    \ensuremath{\mathsf{LTree}\;\Conid{NPoint}}
+           \ar[d]_-{\ensuremath{\Varid{alg}}}
+&
+    \ensuremath{\Conid{NPoint}\mathbin{+}\mathsf{LTree}\;\Conid{NPoint}\mathbin{*}\mathsf{LTree}\;\Conid{NPoint}}
+           \ar[d]^{\ensuremath{\Varid{id}\mathbin{+}\Varid{alg}\mathbin{*}\Varid{alg}}}
+           \ar[l]_-{\ensuremath{\mathbf{in}}}
+\\
+     \ensuremath{\Conid{OverTime}\;\Conid{NPoint}}
+&
+     \ensuremath{\Conid{NPoint}\mathbin{+}\Conid{OverTime}\;\Conid{NPoint}\mathbin{*}\Conid{OverTime}\;\Conid{NPoint}} 
+           \ar[l]^-{\ensuremath{\alt{\Varid{alg1}}{\Varid{alg2}}}}
+}
+\end{eqnarray*}
 
 \subsection*{Problema 4}
 
@@ -1900,9 +1949,9 @@ Depois de termos este conjunto definido temos de olhar para o gene deste catamor
     \begin{eqnarray*}
 \xymatrix@C=2cm{
     \ensuremath{\Conid{A}\mathbin{*}}
-           \ar[d]_-{\ensuremath{\length }}
+           \ar[d]_-{\ensuremath{\mathbin{<}\Varid{avg},\length \mathbin{>}}}
 &
-    \ensuremath{\Conid{A}}
+    \ensuremath{\Conid{A}\mathbin{+}\Conid{A}\mathbin{*}(\Conid{A}\mathbin{*})}
            \ar[d]^{\ensuremath{\Varid{id}\mathbin{+}\Varid{id}\mathbin{*}\mathbin{<}\Varid{avg},\length \mathbin{>}}}
            \ar[l]_-{\ensuremath{\Varid{inNVL}}}
 \\
