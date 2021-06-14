@@ -1093,6 +1093,7 @@ clean (Bin Sum a (N 0)) = clean a
 clean (Bin Product (N 0) _) = i2(i1 0)
 clean (Bin Product _ (N 0)) = i2(i1 0)
 clean (Bin op a b) = i2 . i2 . i1 $ (op, (a, b))
+clean (Un Negate (Un Negate a)) = clean a
 clean (Un op a) = i2.i2.i2 $ (op,a)
 
 gopt a = g_eval_exp a
