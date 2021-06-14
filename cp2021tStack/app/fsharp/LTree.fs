@@ -21,21 +21,21 @@ let outLTree x =
 
 // (2) Ana + cata + hylo -------------------------------------------------------
 
-let baseLTree g f = g -|- (f >< f)
+let baseLTree g f x = (g -|- (f >< f)) x
 
-let recLTree f = baseLTree id f          // that is:  id -|- (f >< f)
+let recLTree f x = baseLTree id f x         // that is:  id -|- (f >< f)
 
-let rec cataLTree a = a << (recLTree (cataLTree a)) << outLTree
+let rec cataLTree a x = (a << (recLTree (cataLTree a)) << outLTree) x
 
-let rec anaLTree f = inLTree << (recLTree (anaLTree f) ) << f
+let rec anaLTree f x = (inLTree << (recLTree (anaLTree f) ) << f) x
 
-let hyloLTree a c = cataLTree a << anaLTree c
+let hyloLTree a c x = (cataLTree a << anaLTree c) x
 
 // (3) Map ---------------------------------------------------------------------
 
 //instance Functor LTree
 //         where fmap f = cataLTree ( inLTree . baseLTree f id )
-let fmap f = cataLTree ( inLTree << baseLTree f id )
+let fmap f x = (cataLTree ( inLTree << baseLTree f id )) x
 
 // (4) Examples ----------------------------------------------------------------
 

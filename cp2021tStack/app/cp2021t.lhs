@@ -133,7 +133,7 @@ a93322 & Tiago Costa
 \\
 a93227 & Pedro Paulo Tavares 
 \\
-a93221 & André Vaz (
+a93221 & André Vaz 
 \\
 \end{tabular}
 \end{center}
@@ -1006,7 +1006,7 @@ eval_exp :: Floating a => a -> (ExpAr a) -> a
 eval_exp a = cataExpAr (g_eval_exp a)
 
 optmize_eval :: (Floating a, Eq a) => a -> (ExpAr a) -> a
-optmize_eval a = hyloExpAr (g_eval_exp a) clean
+optmize_eval a = hyloExpAr (gopt a) clean
 
 sd :: Floating a => ExpAr a -> ExpAr a
 sd = p2 . cataExpAr sd_gen
@@ -1094,14 +1094,8 @@ clean (Bin Product (N 0) _) = i2(i1 0)
 clean (Bin Product _ (N 0)) = i2(i1 0)
 clean (Bin op a b) = i2 . i2 . i1 $ (op, (a, b))
 clean (Un op a) = i2.i2.i2 $ (op,a)
-{-
-gopt = either (const a) (either id (either (uncurry binOp) (uncurry unOp))) where
-    binOp Sum = uncurry (+)
-    binOp Product = uncurry (*)
-    unOp Negate = negate
-    unOp E = expd
 
--}
+gopt a = g_eval_exp a
  
 \end{code}
 
@@ -1262,7 +1256,7 @@ Anamorfismo :
 \xymatrix@@C=3cm{
     |[NPoint]|
            \ar[d]^-{|coalg|}
-           \ar[r]^-{|(id * (split(cons . (id >< init)) p2)) . outNVL|}
+           \ar[r]^-{|(id + (split(cons . (id >< init)) p2)) . outNVL|}
 &
     |NPoint + [NPoint] * [NPoint]|
            \ar[d]^-{|id + coalg * coalg|}           
@@ -1455,8 +1449,6 @@ por isso a Lei da troca e obtemos a definição que nós propusemos.\par
 Inserir em baixo o código \Fsharp\ desenvolvido, entre \verb!\begin{verbatim}! e \verb!\end{verbatim}!:
 
 \begin{verbatim}
-module BTree
-
 open Cp
 
 // (1) Datatype definition --------------------------------------------------
@@ -1474,18 +1466,18 @@ let outBTree x =
 // (2) Ana + cata + hylo -------------------------------------------------------
 // recBTree g = id -|- (id >< (g >< g))
 
-let baseBTree f g = id -|- (f >< (g >< g))
+let baseBTree f g x = (id -|- (f >< (g >< g))) x
 
-let recBTree g = baseBTree id g         
-let rec cataBTree a = a << (recBTree (cataBTree a)) << outBTree
+let recBTree g x = baseBTree id g x        
+let rec cataBTree a x = (a << (recBTree (cataBTree a)) << outBTree) x
 
-let rec anaBTree f = inBTree << (recBTree (anaBTree f) ) << f
+let rec anaBTree f x = (inBTree << (recBTree (anaBTree f) ) << f) x
 
-let hyloBTree a c = cataBTree a << anaBTree c
+let hyloBTree a c x = (cataBTree a << anaBTree c) x
 
 // (3) Map ---------------------------------------------------------------------
 
-let fmap f = cataBTree ( inBTree << baseBTree f id )
+let fmap f x = (cataBTree ( inBTree << baseBTree f id )) x
 
 // (4) Examples ----------------------------------------------------------------
 
@@ -1558,7 +1550,7 @@ let baldepth x =
         in cataBTree g x
 
 let depthBTree x = p2(baldepth x)
-let balBTree x = p1(baldepth x) 
+let balBTree x = p1(baldepth x)
 \end{verbatim}
 
 %----------------- Fim do anexo com soluções dos alunos ------------------------%
